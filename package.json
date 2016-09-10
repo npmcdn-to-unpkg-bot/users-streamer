@@ -1,0 +1,14 @@
+{
+  "name": "users-streamer",
+  "version": "0.0.1",
+  "description": "socket.io app",
+  "dependencies": {
+    "express": "^4.10.2",
+    "react": "^15.3.1",
+    "react-dom": "^15.3.1",
+    "socket.io": "^1.4.8"
+  },
+  "devDependencies": {
+    "faker": "^3.1.0"
+  }
+}

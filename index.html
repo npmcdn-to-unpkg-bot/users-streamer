@@ -1,0 +1,308 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Infinite Users List</title>
+        <link href="//fonts.googleapis.com/css?family=Oswald:300" rel="stylesheet">
+        <script src="https://npmcdn.com/react@15.3.0/dist/react.js"></script>
+        <script src="https://npmcdn.com/react-dom@15.3.0/dist/react-dom.js"></script>
+        <script src="https://npmcdn.com/babel-core@5.8.38/browser.min.js"></script>
+        <script src="https://unpkg.com/jquery@3.1.0/dist/jquery.min.js"></script>
+        <style>
+            body {
+                background: #f44336;
+                padding: 25px 0;
+            }
+            .info {
+                position: fixed;
+                width: 515px;
+                top: 50px;
+                padding: 20px;
+                background: #bcbcbc;
+                font-family: monospace;
+                font-size: 13px;
+            }
+            .info h1 {
+                margin-top: 0;
+            }
+            .stop-button {
+                color: #fff;
+                padding: 6px 12px;
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 1.42857143;
+                text-align: center;
+                background-color: #d9534f;
+                border: 1px solid #d43f3a;
+                border-radius: 4px;
+                cursor: pointer;
+                outline: none;
+            }
+            .stop-button.streamerIsOn {
+                background-color: #337ab7;
+                border: 1px solid #2e6da4;
+            }
+            .usersContainer {
+                list-style: none;
+            }
+            .user {
+                width: 300px;
+                text-align: center;
+                margin: 0 auto 15px;
+                background-color: #F9F9F9;
+                padding: 35px;
+                border-radius: 10px;
+                font-family: 'Oswald';
+                box-shadow: 5px 5px 0px 2px #9E9E9E;
+            }
+            .user .profile-pic {
+                width: 128px;
+                height: 128px;
+                border-radius: 50%;
+                position: relative;
+                margin: auto;
+            }
+            .user .profile-pic:before{
+                content: '';
+                position: absolute;
+                top: -8px;
+                left: -8px;
+                width: 140px;
+                height: 140px;
+                border-radius: 50%;
+                border: 2px solid #BCBCBC;
+            }
+            .user .profile-pic:after{
+                content: '';
+                position: absolute;
+                top: -13px;
+                left: -13px;
+                width: 150px;
+                height: 150px;
+                border-radius: 50%;
+                border: 2px solid #FF9900;
+            }
+            .user .profile-pic img {
+                border-radius: 50%;
+            }
+            .profile-name {
+                margin-top: 30px;
+                font-size: 25px;
+            }
+            .profile-age{
+                font-size: 18px;
+            }
+            .age-number {
+                font-size: 30px;
+            }
+            .new {
+                -webkit-animation-delay: 0.3s;
+                animation-delay: 0.3s;
+            }
+            .animated {
+                -webkit-animation-duration: 2s;
+                animation-duration: 2s;
+                -webkit-animation-fill-mode: both;
+                animation-fill-mode: both;
+            }
+
+            @-webkit-keyframes bounceInDown {
+              from, 60%, 75%, 90%, to {
+                -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+                animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+              }
+
+              0% {
+                opacity: 0;
+                -webkit-transform: translate3d(0, -3000px, 0);
+                transform: translate3d(0, -3000px, 0);
+              }
+
+              60% {
+                opacity: 1;
+                -webkit-transform: translate3d(0, 25px, 0);
+                transform: translate3d(0, 25px, 0);
+              }
+
+              75% {
+                -webkit-transform: translate3d(0, -10px, 0);
+                transform: translate3d(0, -10px, 0);
+              }
+
+              90% {
+                -webkit-transform: translate3d(0, 5px, 0);
+                transform: translate3d(0, 5px, 0);
+              }
+
+              to {
+                -webkit-transform: none;
+                transform: none;
+              }
+            }
+
+            @keyframes bounceInDown {
+                from, 60%, 75%, 90%, to {
+                    -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+                    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+                }
+
+                0% {
+                    opacity: 0;
+                    -webkit-transform: translate3d(0, -3000px, 0);
+                    transform: translate3d(0, -3000px, 0);
+                }
+
+                60% {
+                    opacity: 1;
+                    -webkit-transform: translate3d(0, 25px, 0);
+                    transform: translate3d(0, 25px, 0);
+                }
+
+                75% {
+                    -webkit-transform: translate3d(0, -10px, 0);
+                    transform: translate3d(0, -10px, 0);
+                }
+
+                90% {
+                    -webkit-transform: translate3d(0, 5px, 0);
+                    transform: translate3d(0, 5px, 0);
+                }
+
+                to {
+                    -webkit-transform: none;
+                    transform: none;
+                }
+            }
+
+            .bounceInDown {
+                -webkit-animation-name: bounceInDown;
+                animation-name: bounceInDown;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="info">
+            <h1>Users Streamer</h1>
+            <p>
+                This website will recive <strong>5000</strong> different user profiles via socket.io connection based on noe.js and is renderin each one of them using React. <br><br>
+                The streamer will automatically stop after rendering 5000 users. <br>
+                If you wish to stop the steamer manually, just click the button.
+            </p>
+            <div id="button-wrapper"></div>
+        </div>
+        <div id="app"></div>
+
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/babel">
+            var socket = io(),
+                usersList = [];
+
+            function updateUserList(user) {
+                usersList.push(user);
+                list._onNewUserAddition(usersList);
+
+                if (gotEnoughUser(usersList.length)) {
+                    socket.emit("stop user stream");
+                }
+            }
+
+            function gotEnoughUser(numberOfUsers){
+                return numberOfUsers === 5000;
+            }
+
+            function getNewUserFromServer() {
+                if (!gotEnoughUser(usersList.length)) {
+                    socket.emit("get new user");
+                }
+            }
+
+            function stopStreamer() {
+                socket.emit("stop streamer");
+            }
+
+            var User = React.createClass({
+                componentDidMount: function(){
+                    var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend',
+                        newItem = $(".user.new");
+
+                    newItem.addClass("visible");
+                    newItem.on(animationEnd, function () {
+                        newItem.removeClass("new animated bounceInDown");
+                        setTimeout(function () {
+                            getNewUserFromServer();
+                        }, 2000)
+                    });
+                },
+                render: function(){
+                    return (
+                        <li className="user new animated bounceInDown">
+                            <div className="profile-pic">
+                                <img src={this.props.image} />
+                            </div>
+                            <div className="profile-name">{this.props.name}</div>
+                            <div className="profile-age">
+                                <div className="age-number">{this.props.age}</div>
+                                <div>years old</div>
+                            </div>
+                        </li>
+                    );
+                }
+            });
+
+            var List = React.createClass({
+                getInitialState: function() {
+                    return {users: []};
+                },
+                componentDidMount: function () {
+                    getNewUserFromServer();
+                },
+                _onNewUserAddition: function (usersList) {
+                    this.setState({users: usersList});
+                },
+                render: function(){
+                    var allUsers = this.props.users.map(function(user, index){
+                        return (
+                            <User key={index} name={user.name} age={user.age} image={user.img}/>
+                        )
+                    });
+                    allUsers.reverse();
+                    return (
+                        <ul className="usersContainer">
+                            {allUsers}
+                        </ul>
+                    );
+                }
+            });
+
+            var StopButton = React.createClass({
+                componentDidMount: function () {
+                    var button = $(".stop-button");
+                    button.click(function(){
+                        $(this).removeClass("streamerIsOn").text("Streamer Is Off");
+                        stopStreamer();
+                    });
+                },
+                render: function(){
+                    return (
+                        <button className="stop-button streamerIsOn">
+                            <span>Stop User Streamer</span>
+                        </button>
+                    );
+                }
+            });
+
+            ReactDOM.render(
+                <StopButton />,
+                document.getElementById("button-wrapper")
+            );
+
+            var list = ReactDOM.render(
+                <List users={usersList}/>,
+                document.getElementById("app")
+            );
+
+            socket.on("send new user", function(data){
+                updateUserList(data);
+            });
+        </script>
+    </body>
+</html>
